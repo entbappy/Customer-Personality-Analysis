@@ -1,0 +1,32 @@
+artifacts_config:
+  artifacts_dir: artifacts
+
+data_ingestion_config:
+  dataset_download_url: https://github.com/entbappy/Branching-tutorial/raw/master/marketing_campaign.zip
+  dataset_dir: dataset
+  ingested_dir: ingested_data
+  raw_data_dir: raw_data
+
+data_validation_config:
+  clean_data_dir: clean_data
+  serialized_objects_dir: serialized_objects
+  customer_csv_file: customer.csv
+  product_class_csv_file: product_class.csv
+  product_csv_file: product.csv
+  region_csv_file: region.csv
+  sales_csv_file: sales.csv
+  store_csv_file: store.csv
+  time_by_day_csv_file: time_by_day.csv
+
+
+data_transformation_config:
+  transformed_data_dir: transformed_data
+
+
+model_trainer_config:
+  trained_model_dir: trained_model
+  trained_model_name: model.pkl
+
+
+
+
