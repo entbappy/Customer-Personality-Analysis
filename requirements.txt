@@ -5,4 +5,5 @@ notebook
 PyYAML
 seaborn
 sklearn
+flask
 -e .

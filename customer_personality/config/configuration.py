@@ -3,7 +3,7 @@ import sys
 from customer_personality.logger.log import logging
 from customer_personality.utils.util import read_yaml_file
 from customer_personality.exception.exception_handler import AppException
-from customer_personality.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelTrainerConfig, ModelRecommendationConfig
+from customer_personality.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelTrainerConfig, ModelPredictionConfig
 from customer_personality.constant import *
 
 
@@ -44,33 +44,16 @@ class AppConfiguration:
             data_ingestion_config = self.configs_info['data_ingestion_config']
             dataset_dir = data_ingestion_config['dataset_dir']
             artifacts_dir = self.configs_info['artifacts_config']['artifacts_dir']
-            customer_csv_file = data_validation_config['customer_csv_file']
-            product_class_csv_file = data_validation_config['product_class_csv_file']
-            product_csv_file = data_validation_config['product_csv_file']
-            region_csv_file = data_validation_config['region_csv_file']
-            sales_csv_file = data_validation_config['sales_csv_file']
-            store_csv_file = data_validation_config['store_csv_file']
-            time_by_day_csv_file = data_validation_config['time_by_day_csv_file']
-
-            customer_csv_file_dir = os.path.join(artifacts_dir, dataset_dir, data_ingestion_config['ingested_dir'], customer_csv_file)
-            product_class_csv_file_dir = os.path.join(artifacts_dir, dataset_dir, data_ingestion_config['ingested_dir'], product_class_csv_file)
-            product_csv_file_dir = os.path.join(artifacts_dir, dataset_dir, data_ingestion_config['ingested_dir'], product_csv_file)
-            region_csv_file_dir = os.path.join(artifacts_dir, dataset_dir, data_ingestion_config['ingested_dir'], region_csv_file)
-            sales_csv_file_dir = os.path.join(artifacts_dir, dataset_dir, data_ingestion_config['ingested_dir'], sales_csv_file)
-            store_csv_file_dir = os.path.join(artifacts_dir, dataset_dir, data_ingestion_config['ingested_dir'], store_csv_file)
-            time_by_day_csv_file_dir = os.path.join(artifacts_dir, dataset_dir, data_ingestion_config['ingested_dir'], time_by_day_csv_file)
+            marketing_campaign_csv_file = data_validation_config['marketing_campaign_csv_file']
+            
+            marketing_campaign_csv_file_dir = os.path.join(artifacts_dir, dataset_dir, data_ingestion_config['ingested_dir'], marketing_campaign_csv_file)
+            
             clean_data_path = os.path.join(artifacts_dir, dataset_dir, data_validation_config['clean_data_dir'])
             serialized_objects_dir = os.path.join(artifacts_dir, data_validation_config['serialized_objects_dir'])
 
             response = DataValidationConfig(
                 clean_data_dir = clean_data_path,
-                customer_csv_file = customer_csv_file_dir,
-                product_class_csv_file = product_class_csv_file_dir,
-                product_csv_file = product_csv_file_dir,
-                region_csv_file = region_csv_file_dir,
-                sales_csv_file = sales_csv_file_dir,
-                store_csv_file = store_csv_file_dir,
-                time_by_day_csv_file = time_by_day_csv_file_dir,
+                marketing_campaign_csv_file = marketing_campaign_csv_file_dir,
                 serialized_objects_dir = serialized_objects_dir
             )
 
@@ -116,7 +99,7 @@ class AppConfiguration:
 
           
            
-            transformed_data_file_dir = os.path.join(artifacts_dir, dataset_dir, data_transformation_config['transformed_data_dir'], 'transformed_data.pkl')
+            transformed_data_file_dir = os.path.join(artifacts_dir, dataset_dir, data_transformation_config['transformed_data_dir'], 'transformed_data.csv')
             trained_model_dir = os.path.join(artifacts_dir, model_trainer_config['trained_model_dir'])
             trained_model_name = model_trainer_config['trained_model_name']
 
@@ -134,24 +117,20 @@ class AppConfiguration:
 
 
     
-    def get_recommendation_config(self) -> ModelRecommendationConfig:
+    def get_prediction_config(self) -> ModelPredictionConfig:
         try:
             model_trainer_config = self.configs_info['model_trainer_config']
-            data_validation_config = self.configs_info['data_validation_config']
             trained_model_name = model_trainer_config['trained_model_name']
             artifacts_dir = self.configs_info['artifacts_config']['artifacts_dir']
             trained_model_dir = os.path.join(artifacts_dir, model_trainer_config['trained_model_dir'])
             
-
-            list_of_products_serialized_objects = os.path.join(artifacts_dir, data_validation_config['serialized_objects_dir'], 'list_of_products.pkl')
             trained_model_path = os.path.join(trained_model_dir,trained_model_name)
           
-            response = ModelRecommendationConfig(
-                list_of_products_serialized_objects = list_of_products_serialized_objects,
+            response = ModelPredictionConfig(
                 trained_model_path = trained_model_path
             )
 
-            logging.info(f"Model Recommendation Config: {response}")
+            logging.info(f"Model Prediction Config: {response}")
             return response
 
         except Exception as e:

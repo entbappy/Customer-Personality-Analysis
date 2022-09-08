@@ -1,87 +1,75 @@
 import os
 import sys
 import pickle
-import streamlit as st
+from flask import Flask, render_template, request
+import numpy as np
+import pandas as pd
 from customer_personality.logger.log import logging
 from customer_personality.exception.exception_handler import AppException
 from customer_personality.config.configuration import AppConfiguration
 from customer_personality.pipeline.training_pipeline import TrainingPipeline
 
 
-class Recommendation:
-    def __init__(self,app_config = AppConfiguration()):
-        try:
-            self.recommendation_config= app_config.get_recommendation_config()
-        except Exception as e:
-            raise AppException(e, sys) from e
 
-    
+# obj = TrainingPipeline()
+# obj.start_training_pipeline()
+# print("Training Completed!")
 
-    def recommendations_using_Fpgrowth(self,item):
-        try:
-            fpgrowth_rules = pickle.load(open(self.recommendation_config.trained_model_path,'rb'))
-            recommend = []
-            records = fpgrowth_rules.shape[0]
-            for i in range(0,records):
-                if item == fpgrowth_rules.iloc[i,0]:
-                    recommend.append(fpgrowth_rules.iloc[i,1])
-            
-            return recommend
-        
-        except Exception as e:
+
+# pipe = pickle.load(open('Model/pipe.pkl', 'rb'))
+
+
+app = Flask(__name__) # initializing a flask app
+
+@app.route('/',methods=['GET'])  # route to display the home page
+def homePage():
+    try:
+        return render_template("index.html")
+    except Exception as e:
             raise AppException(e, sys) from e
 
 
-    def train_engine(self):
+
+@app.route('/train',methods=['POST','GET'])
+def train():
+    if request.method == 'POST':
         try:
             obj = TrainingPipeline()
             obj.start_training_pipeline()
-            st.text("Training Completed!")
-            logging.info(f"Trained successfully!")
+            logging.info("Training Completed!")
+            return render_template("index.html")
+
         except Exception as e:
             raise AppException(e, sys) from e
 
-    
-    def recommendations_engine(self,item):
+
+
+@app.route('/predict',methods=['POST','GET']) # route to show the predictions in a web UI
+def predict():
+    if request.method == 'POST':
         try:
-            recommended_products = self.recommendations_using_Fpgrowth(item)[0:5]
-            print(recommended_products)
-            if len(recommended_products) == 0:
-                st.text("Nothing recommended_products")
-            else:
-                col1, col2, col3, col4, col5 = st.columns(5)
-                with col1:
-                    st.text(list(recommended_products[0])[0])
+            #  reading the inputs given by the user
+            Income =float(request.form['Income'])
+            Recency =int(request.form['Recency'])
+            Age =int(request.form['Age'])
+            TotalSpendings =int(request.form['TotalSpendings'])
+            Children =int(request.form['Children'])
+            MonthEnrollement =int(request.form['MonthEnrollement'])
 
-                with col2:
-                    st.text(list(recommended_products[1])[0])
+            data = [Income,Recency,Age,TotalSpendings,Children,MonthEnrollement]
+            model = pickle.load(open(AppConfiguration().get_prediction_config().trained_model_path,'rb'))
+            output = model.predict([data])[0]
+            print(output)
 
-                with col3:
-                    st.text(list(recommended_products[2])[0])
-                with col4:
-                    st.text(list(recommended_products[3])[0])
-                with col5:
-                    st.text(list(recommended_products[4])[0])
+            return render_template('results.html', prediction = str(output))
 
         except Exception as e:
             raise AppException(e, sys) from e
+
+    else:
+        return render_template('index.html')
+
 
 
 if __name__ == "__main__":
-    obj = Recommendation()
-    st.header('Customer Market Basket on E-Commerce')
-    st.text("This is a E-Commerce Market Basket based on association rule learning.!")
-
-    #Training
-    if st.button('Train Market Basket'):
-        obj.train_engine()
-
-    list_of_products = pickle.load(open(os.path.join('templates','list_of_products.pkl') ,'rb'))
-    selected_product = st.selectbox(
-    "Type or select a product from the dropdown",
-    list_of_products)
-    print(selected_product)
-    
-    #recommendation
-    if st.button('Show Basket'):
-        obj.recommendations_engine({selected_product})
+	app.run(host="127.0.0.1", port=8080,debug=True)

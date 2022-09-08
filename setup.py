@@ -2,10 +2,10 @@ from setuptools import setup,find_packages
 from typing import List
 
 #Declaring variables for setup functions
-PROJECT_NAME="Customer-Market-Basket-on-E-Commerce"
+PROJECT_NAME="Customer-Personality-Analysis"
 VERSION="0.0.1"
 AUTHOR="BOKTIAR AHMED BAPPY"
-DESRCIPTION="This is a small package of Customer-Market-Basket-on-E-Commerce"
+DESRCIPTION="This is a small package of Customer-Personality-Analysis"
 
 REQUIREMENT_FILE_NAME="requirements.txt"
 

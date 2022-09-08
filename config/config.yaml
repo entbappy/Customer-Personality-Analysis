@@ -10,14 +10,8 @@ data_ingestion_config:
 data_validation_config:
   clean_data_dir: clean_data
   serialized_objects_dir: serialized_objects
-  customer_csv_file: customer.csv
-  product_class_csv_file: product_class.csv
-  product_csv_file: product.csv
-  region_csv_file: region.csv
-  sales_csv_file: sales.csv
-  store_csv_file: store.csv
-  time_by_day_csv_file: time_by_day.csv
-
+  marketing_campaign_csv_file: marketing_campaign.csv
+  
 
 data_transformation_config:
   transformed_data_dir: transformed_data
